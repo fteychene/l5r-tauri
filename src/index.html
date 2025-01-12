@@ -4,56 +4,59 @@
 <head>
   <meta charset="UTF-8" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=500, initial-scale=1.0" />
   <title>L5R Dice roller</title>
   <script type="module" src="/main.js" defer></script>
 </head>
 
 <body>
-  <section class="hero">
-    <div class="hero-body">
-      <p class="title">L5R Dice roller</p>
-    </div>
-  </section>
-  <main class="container">
-    <h1>L5R dice roller</h1>
+  <div class="container is-max-tablet">
+    <h1 class="title my-3">L5R Dice roller</h1>
     <form id="roll-form">
-      <div class="flex two">
-        <div><span>
-            <input id="roll-dice-input" type="number" placeholder="10" aria-label="Roll"
-              aria-describedby="dice-helper" /> g
-            <div><small id="dice-helper">Number of dice to roll</small></div>
-          </span>
-        </div>
-        <div>
-          <span>
-            <input id="roll-keep-input" type="number" placeholder="3" aria-label="Keep"
-              aria-describedby="keep-helper" />
-            <div><small id="keep-helper">Number of dice to keep</small></div>
-          </span>
-        </div>
 
-        <div>
-          <input type="checkbox" id="roll-specialized-input" name="specialized" checked />
-          <label for="specialized">Specialized</label>
+      <div class="field is-horizontal">
+        <div class="field-label is-normal">
+          <label class="label">Roll</label>
         </div>
-        <div></div>
-
-        <div>
-          <button class="contrast" type="submit">Roll !</button>
+        <div class="field-body">
+          <div class="field">
+            <p class="control">
+              <input id="roll-dice-input" class="input" type="number" placeholder="10" />
+            </p>
+          </div>
+          <div class="control mr-2 label">
+            g
+          </div>
+          <div class="field">
+            <p class="control">
+              <input id="roll-keep-input" class="input" type="number" placeholder="3" />
+            </p>
+          </div>
         </div>
       </div>
-    </form>
-    <p id="roll-msg"></p>
-  </main>
+      
+      <div class="field is-horizontal">
+        <div class="field-label">
+          <label class="label">Specialized</label>
+        </div>
+        <div class="field-body">
+          <input type="checkbox" id="roll-specialized-input" name="specialized" checked />
+        </div>
+      </div>
 
-  <footer class="footer">
-    <div class="content has-text-centered">
-      <p>
-        Created by fteychene and he doesn't know why ...
-      </p>
+      <div class="field is-horizontal">
+        <div class="field-label"></div>
+        <div class="field-body">
+          <div class="control">
+            <button class="button" type="submit">Roll !</button>
+          </div>
+        </div>
+      </div>
+
+    </form>
+    <div id="roll-msg" class="notification is-primary is-light is-hidden py-2 my-3">
     </div>
-  </footer>
+  </div>
 </body>
 
 </html>
