@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>L5R Dice roller</title>
+  <script type="module" src="/main.js" defer></script>
+</head>
+
+<body>
+  <section class="hero">
+    <div class="hero-body">
+      <p class="title">L5R Dice roller</p>
+    </div>
+  </section>
+  <main class="container">
+    <h1>L5R dice roller</h1>
+    <form id="roll-form">
+      <div class="flex two">
+        <div><span>
+            <input id="roll-dice-input" type="number" placeholder="10" aria-label="Roll"
+              aria-describedby="dice-helper" /> g
+            <div><small id="dice-helper">Number of dice to roll</small></div>
+          </span>
+        </div>
+        <div>
+          <span>
+            <input id="roll-keep-input" type="number" placeholder="3" aria-label="Keep"
+              aria-describedby="keep-helper" />
+            <div><small id="keep-helper">Number of dice to keep</small></div>
+          </span>
+        </div>
+
+        <div>
+          <input type="checkbox" id="roll-specialized-input" name="specialized" checked />
+          <label for="specialized">Specialized</label>
+        </div>
+        <div></div>
+
+        <div>
+          <button class="contrast" type="submit">Roll !</button>
+        </div>
+      </div>
+    </form>
+    <p id="roll-msg"></p>
+  </main>
+
+  <footer class="footer">
+    <div class="content has-text-centered">
+      <p>
+        Created by fteychene and he doesn't know why ...
+      </p>
+    </div>
+  </footer>
+</body>
+
+</html>
