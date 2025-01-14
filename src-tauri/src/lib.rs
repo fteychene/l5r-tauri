@@ -7,12 +7,9 @@ use serde::{Deserialize, Serialize};
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 #[tauri::command]
 fn roll(dice: usize, keep: usize, specialized: bool) -> String {
-    // let skills = load_skills().expect("Should not fail");
-    // let roll: u8 = skills[0].roll;
-    // let keep = skills[0].keep;
     let rolled = roll_skill(dice, keep, specialized).collect::<Vec<u8>>();
     format!(
-        "Rolled = {} {:?}",
+        "{} {:?}",
         rolled.clone().into_iter().sum::<u8>(),
         rolled
     )
