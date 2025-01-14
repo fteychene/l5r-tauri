@@ -1,0 +1,1 @@
+[{"name":"Coucou","roll":8,"keep":5,"specialized":true},{"name":"Arme d'hast","roll":11,"keep":6,"specialized":true},{"name":"Kenjutsu","roll":9,"keep":5,"specialized":false}]

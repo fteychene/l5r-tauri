@@ -4,9 +4,10 @@ import RollForm from './RollForm.tsx'
 import Result from './Result.tsx'
 import { RollFormInput, RollResult } from './model.ts'
 import { invoke } from '@tauri-apps/api/core'
-import { open } from '@tauri-apps/plugin-dialog';
+import { open, save } from '@tauri-apps/plugin-dialog';
 import Icon from '@mdi/react';
-import { mdiPlus, mdiDiceD10 } from '@mdi/js';
+import { mdiPlus, mdiDiceD10, mdiDelete, mdiContentSave } from '@mdi/js';
+import { useForm } from 'react-hook-form'
 
 enum Mode {
   GenericRoll,
@@ -26,7 +27,7 @@ const App = () => {
   const [skillRolled, setSkillRolled] = useState<RollResult>()
   const [history, setHistory] = useState<RollResult[]>([])
   const [mode, setMode] = useState<Mode>(Mode.GenericRoll)
-  const [skills, setSkills] = useState<Skill[]>()
+  const [skills, setSkills] = useState<Skill[]>([])
 
   async function handleGenericRollSubmit(data: RollFormInput) {
     // Number from TS seems to be sent by Tauri as string so force a pure JS parsing. ¯\_(ツ)_/¯
@@ -36,7 +37,6 @@ const App = () => {
   }
 
   async function handleSkillRoll(skill: Skill) {
-    // Number from TS seems to be sent by Tauri as string so force a pure JS parsing. ¯\_(ツ)_/¯
     let result: RollResult = await invoke("roll", { skill: skill.name, dice: skill.roll, keep: skill.keep, specialized: skill.specialized })
     setHistory(history => [result, ...history].slice(0, 10))
     setSkillRolled(result);
@@ -45,6 +45,26 @@ const App = () => {
   async function loadSkills(path: string) {
     var skills: Skill[] = await invoke("load_skills_command", { path })
     return skills
+  }
+
+  const [newSkillToggle, setNewSkillToggle] = useState<boolean>(false)
+
+  interface NewSkillForm {
+    name: string,
+    roll: number,
+    keep: number,
+    specialized: boolean,
+  }
+  const { register, formState: { errors }, handleSubmit, reset } = useForm<NewSkillForm>({
+    defaultValues: {
+      specialized: true
+    }
+  });
+
+  const AddSkill = (datas: NewSkillForm) => {
+    setSkills(skills => [{ name: datas.name, roll: parseInt(datas.roll.toString()), keep: parseInt(datas.keep.toString()), specialized: datas.specialized }, ...skills]);
+    setNewSkillToggle(false);
+    reset();
   }
 
   return (
@@ -76,7 +96,8 @@ const App = () => {
       </div>
 
       <div className={mode == Mode.Skill ? "" : "is-hidden"}>
-        <table className="table" style={{ "width": "100%" }}>
+
+        <table className="table is-fullwidth is-striped">
           <thead>
             <tr>
               <th>Skill</th>
@@ -93,20 +114,47 @@ const App = () => {
                 <th> {skill.roll} </th>
                 <th> {skill.keep} </th>
                 <th> <input type="checkbox" disabled checked={skill.specialized} /></th>
-                <th> <button className="button is-primary" onClick={() => handleSkillRoll(skill)}>
-                  <span className="icon is-small">
-                    <Icon path={mdiDiceD10} size={1}/>
-                  </span>
-                  <span>Roll</span>
-                </button>
+                <th>
+                  <div className="buttons has-addons">
+                    <button className="button is-primary" onClick={() => handleSkillRoll(skill)}>
+                      <span className="icon is-small">
+                        <Icon path={mdiDiceD10} size={0.7} />
+                      </span>
+                      <span>Roll</span>
+                    </button>
+                    <button className="button is-is-danger" onClick={() => setSkills(skills => skills?.filter(v => v.name != skill.name))}>
+                      <span className="icon is-small">
+                        <Icon path={mdiDelete} size={0.7} />
+                      </span>
+                    </button>
+                  </div>
                 </th>
               </tr>)}
           </tbody>
         </table>
+
         <nav className="level">
           <div className="level-left">
+            <p className="level-item"><a className="button" onClick={() => setNewSkillToggle(true)}>New</a></p>
           </div>
           <div className="level-right">
+            <p className="level-item">
+              <button className="button" disabled={skills.length == 0} onClick={() => save({
+                filters: [
+                  {
+                    name: 'Json',
+                    extensions: ['json'],
+                  },
+                ],
+              }).then(path => invoke("save_skills_command", { path: path, skills: skills }))
+                .then(filePath => alert("Saved to "+filePath))
+                .catch((error) => console.error(error))}>
+                <span className="icon is-small">
+                  <Icon path={mdiContentSave} size={0.7} />
+                </span>
+                <span>Save</span>
+              </button>
+            </p>
             <p>
               <div className="file" onClick={() => open({
                 multiple: false,
@@ -129,7 +177,83 @@ const App = () => {
             </p>
           </div>
         </nav>
+
+        <div className={newSkillToggle ? "notification" : "is-hidden"}>
+          <button className="delete" aria-label="delete" onClick={() => setNewSkillToggle(false)} />
+
+          <form onSubmit={handleSubmit(AddSkill)}>
+
+            <div className="field is-horizontal">
+              <div className="field-label is-normal">
+                <label className="label">Name</label>
+              </div>
+              <div className="field-body">
+                <div className="field is-narrow">
+                  <p className="control">
+                    <input className="input" {...register("name", { required: true })} />
+                  </p>
+                  {errors.name?.type === "required" && (
+                    <p className="help is-danger" role="alert">Required value</p>
+                  )}
+                </div>
+              </div>
+            </div>
+            <div className="field is-horizontal">
+              <div className="field-label is-normal">
+                <label className="label">Roll</label>
+              </div>
+              <div className="field-body">
+                <div className="field">
+                  <p className="control">
+                    <input className="input" type="number" placeholder="10" {...register("roll", { required: true })} />
+                  </p>
+                  {errors.roll?.type === "required" && (
+                    <p className="help is-danger" role="alert">Required integer value</p>
+                  )}
+                </div>
+                <div className="control mr-2 label">
+                  g
+                </div>
+                <div className="field">
+                  <p className="control">
+                    <input className="input" type="number" placeholder="3" {...register("keep", { required: true })} />
+                  </p>
+                  {errors.keep?.type === "required" && (
+                    <p className="help is-danger" role="alert">Required integer value</p>
+                  )}
+                </div>
+              </div>
+
+            </div>
+
+            <div className="field is-horizontal">
+              <div className="field-label">
+                <label className="label">Specialized</label>
+              </div>
+              <div className="field-body">
+                <div className="control">
+                  <input type="checkbox" {...register("specialized")} />
+                </div>
+              </div>
+            </div>
+
+            <div className="field is-horizontal">
+              <div className="field-label"></div>
+              <div className="field-body">
+                <div className="control">
+                  <button className="button is-primary">
+                    <span className="icon is-small">
+                      <Icon path={mdiPlus} size={1} />
+                    </span>
+                    <span>Add</span></button>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+
         <Result result={skillRolled} />
+
       </div>
 
       <div className={mode == Mode.History ? "" : "is-hidden"}>

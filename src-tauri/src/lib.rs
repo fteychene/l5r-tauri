@@ -1,4 +1,9 @@
-use std::{env, error::Error, fs};
+use std::{
+    env,
+    error::Error,
+    fs::{self, OpenOptions},
+    io::{BufWriter, Write},
+};
 
 use itertools::Itertools;
 use rand::{rngs::ThreadRng, Rng};
@@ -23,6 +28,24 @@ async fn load_skills_command(path: String) -> Vec<Skill> {
         .unwrap_or(vec![])
 }
 
+#[tauri::command]
+async fn save_skills_command(path: String, skills: Vec<Skill>) -> Result<String, String> {
+    println!("Received save to {} with {:?}", path, skills);
+    let file = OpenOptions::new()
+        .write(true)
+        .create(true)
+        .truncate(true)
+        .open(&path)
+        .map_err(|e| format!("Can't open file {} : {:?}", path, e))?;
+    let mut writer = BufWriter::new(file);
+    serde_json::to_writer(&mut writer, &skills)
+        .map_err(|e| format!("Can't write json : {:?}", e))?;
+    writer
+        .flush()
+        .map_err(|e| format!("Can't flush file : {:?}", e))?;
+    Ok(path)
+}
+
 #[derive(Serialize)]
 struct RollResult {
     skill: Option<String>,
@@ -32,7 +55,7 @@ struct RollResult {
     rolls: Vec<u8>,
 }
 
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 struct Skill {
     name: String,
     roll: u8,
@@ -73,7 +96,11 @@ pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![roll, load_skills_command])
+        .invoke_handler(tauri::generate_handler![
+            roll,
+            load_skills_command,
+            save_skills_command
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
