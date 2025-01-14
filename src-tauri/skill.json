@@ -2,11 +2,13 @@
     {
         "name": "Arme d'hast",
         "roll": 11,
-        "keep": 6
+        "keep": 6,
+        "specialized" : true
     },
     {
         "name": "Kenjutsu",
         "roll": 9,
-        "keep": 5
+        "keep": 5,
+        "specialized" : false
     }
 ]
