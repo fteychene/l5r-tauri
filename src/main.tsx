@@ -36,7 +36,7 @@ const App = () => {
           </li>
           <li className={mode == Mode.History ? "is-active" : ""} onClick={() => setMode(Mode.History)} >
             <a>
-              <span className="is-small"><i className="fas fa-film"></i></span>
+              <span className="is-small"><i className="fas"></i></span>
               <span>History</span>
             </a>
           </li>
