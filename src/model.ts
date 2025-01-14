@@ -1,6 +1,9 @@
 export type RollResult = {
     skill?: string
-    result: string
+    dice: number,
+    keep: number,
+    result: string,
+    rolls: number[]
 }
 
 export interface RollFormInput {

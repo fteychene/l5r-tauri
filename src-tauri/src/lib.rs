@@ -6,13 +6,24 @@ use serde::{Deserialize, Serialize};
 
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 #[tauri::command]
-fn roll(dice: usize, keep: usize, specialized: bool) -> String {
+fn roll(skill: Option<String>, dice: usize, keep: usize, specialized: bool) -> RollResult {
     let rolled = roll_skill(dice, keep, specialized).collect::<Vec<u8>>();
-    format!(
-        "{} {:?}",
-        rolled.clone().into_iter().sum::<u8>(),
-        rolled
-    )
+    RollResult {
+        skill,
+        dice,
+        keep,
+        result: rolled.clone().into_iter().map(|x| x as usize).sum(),
+        rolls: rolled
+    }
+}
+
+#[derive(Serialize)]
+struct RollResult {
+    skill: Option<String>,
+    dice: usize,
+    keep: usize,
+    result: usize,
+    rolls: Vec<u8>
 }
 
 #[derive(Serialize, Deserialize)]
