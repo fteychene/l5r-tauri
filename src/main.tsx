@@ -86,11 +86,6 @@ const App = () => {
               <th>_</th>
             </tr>
           </thead>
-          <tfoot>
-            <tr>
-
-            </tr>
-          </tfoot>
           <tbody>
             {skills?.map(skill =>
               <tr>
@@ -100,7 +95,7 @@ const App = () => {
                 <th> <input type="checkbox" disabled checked={skill.specialized} /></th>
                 <th> <button className="button is-primary" onClick={() => handleSkillRoll(skill)}>
                   <span className="icon is-small">
-                    <Icon path={mdiDiceD10} />
+                    <Icon path={mdiDiceD10} size={1}/>
                   </span>
                   <span>Roll</span>
                 </button>

@@ -1,6 +1,7 @@
 import { useForm } from "react-hook-form";
 import { RollFormInput } from "./model";
-
+import Icon from '@mdi/react';
+import { mdiDiceMultiple } from '@mdi/js';
 
 interface RollFormProps {
     formSubmit: (data: RollFormInput) => void
@@ -58,7 +59,11 @@ const RollForm = ({ formSubmit }: RollFormProps) => {
                 <div className="field-label"></div>
                 <div className="field-body">
                     <div className="control">
-                        <button className="button">Roll !</button>
+                        <button className="button is-primary">
+                            <span className="icon is-small">
+                                <Icon path={mdiDiceMultiple} size={1} />
+                            </span>
+                            <span>Roll !</span></button>
                     </div>
                 </div>
             </div>
