@@ -8,8 +8,6 @@
   "permissions": [
     "core:default",
     "opener:default",
-    "opener:default",
-    "opener:default",
     "dialog:default",
     "clipboard-manager:default",
     "clipboard-manager:allow-write-text"
